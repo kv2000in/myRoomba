@@ -6,10 +6,17 @@
 	objectVersion = 50;
 	objects = {
 
+/* Begin PBXFileReference section */
+		2A0502712667FF4600C4D89D /* ESP-Roomba-Self-AP */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "ESP-Roomba-Self-AP"; sourceTree = "<group>"; };
+		2A050272267692BB00C4D89D /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
 /* Begin PBXGroup section */
 		2A0502672667FDBB00C4D89D = {
 			isa = PBXGroup;
 			children = (
+				2A050272267692BB00C4D89D /* index.html */,
+				2A0502712667FF4600C4D89D /* ESP-Roomba-Self-AP */,
 			);
 			sourceTree = "<group>";
 		};
