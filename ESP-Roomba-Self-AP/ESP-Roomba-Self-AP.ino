@@ -9,6 +9,7 @@
 #define APPSK  "revoRym123"
 #endif
 
+#define ROOMBA_READ_TIMEOUT 200;
 /* Set these to your desired credentials. */
 const char *ssid = APSSID;
 const char *password = APPSK;
@@ -1272,18 +1273,6 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!DOCTYPE html>
       { 
         console.log('websock open'); 
         iswebsocketconnected=true;
-        if(smartbattery)
-        {
-          doSend("<A-D>"); //Send adjust PWM Digital on connecting }
-        } 
-        else 
-        {
-          doSend("<A-A>"); //Send adjust PWM  on connecting }
-          
-        }
-          //attach the steeringservo
-          
-          attachordetachservos("w","a");
           
           
       }
@@ -1294,10 +1283,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!DOCTYPE html>
         iswebsocketconnected=false;
         console.log('websock close'); 
           //clear all the intervals - doesn't work. still dealing with "ghost" setIntervals
-          clearInterval(recurringbatteryinfo);
-          clearInterval(checkingobstacle);
-          clearInterval(checkingrpmA);
-          clearInterval(checkingrpmB);
+          
           
       }
       websock.onerror = function(evt) 
@@ -1341,22 +1327,22 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!DOCTYPE html>
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length)
 {
-Serial1.printf("webSocketEvent(%d, %d, ...)\r\n", num, type);
+//Serial1.printf("webSocketEvent(%d, %d, ...)\r\n", num, type);
 switch(type) {
 case WStype_DISCONNECTED:
-Serial1.printf("[%u] Disconnected!\r\n", num);
+//Serial1.printf("[%u] Disconnected!\r\n", num);
 break;
 case WStype_CONNECTED:
 {
 IPAddress ip = webSocket.remoteIP(num);
-Serial1.printf("[%u] Connected from %d.%d.%d.%d url: %s\r\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+//Serial1.printf("[%u] Connected from %d.%d.%d.%d url: %s\r\n", num, ip[0], ip[1], ip[2], ip[3], payload);
 //itoa( cm, str, 10 );
 //  webSocket.sendTXT(num, str, strlen(str));
 }
 break;
 case WStype_TEXT:
 {
-Serial1.printf("[%u] get Text: %s\r\n", num, payload);
+//Serial1.printf("[%u] get Text: %s\r\n", num, payload);
 //Send whatever comes on the WS to Atmega.
 char *mystring1 = (char *)payload;
 mystring = mystring1;
@@ -1365,10 +1351,10 @@ Serial.write(mystring.toInt());
 }
 break;
 case WStype_BIN:
-Serial1.printf("[%u] get binary length: %u\r\n", num, length);
+//Serial1.printf("[%u] get binary length: %u\r\n", num, length);
 break;
 default:
-Serial1.printf("Invalid WStype [%d]\r\n", type);
+//Serial1.printf("Invalid WStype [%d]\r\n", type);
 break;
 }
 }
@@ -1448,7 +1434,7 @@ else {
 receivedChars[ndx] = '\0'; // terminate the string
 recvInProgress = false;
 webSocket.sendTXT(0,receivedChars,ndx);
-Serial1.println(receivedChars);
+//Serial1.println(receivedChars);
 //Serial.println(receivedChars);
 ndx = 0;
 
@@ -1465,33 +1451,72 @@ recvInProgress = true;
 
 
 /*******************Serial Read Functions ************************/
+/*****generic serial read and send to websocket function ***************/
+/*
+void recvAndSendtoWebSocket(){
+byte  mybytes[64];
+if (Serial.available()>0){
+  int mylength=Serial.available();
+for (int p=0;p<mylength;p++) {
+mybytes[p] = Serial.read();
+  
+  }
+  webSocket.sendBIN(0,mybytes,mylength);
+}
+}
 
+bool getDataFromROOMBA()(uint8_t* dest, uint8_t len)
+{
+  while (len-- > 0)
+  {
+    unsigned long startTime = millis();
+    while (!Serial.available())
+    {
+      // Look for a timeout
+      if (millis() > startTime + ROOMBA_READ_TIMEOUT)
+        return false; // Timed out
+    }
+    *dest++ = Serial.read();
+  }
+  return true;
+}
+*/
+/*****END *** generic serial read and send to websocket function ***************/
 void setup()
 { 
 
-
-Serial1.begin(115200);
-delay(10);
-Serial.begin(19200);
-//Serial1.setDebugOutput(true);
-
-Serial1.println();
-Serial1.println();
-Serial1.println();
-
-for(uint8_t t = 4; t > 0; t--) {
-Serial1.printf("[SETUP] BOOT WAIT %d...\r\n", t);
-Serial1.flush();
+//Change Roomba Baud rate to 19200
+/*
+Use the Baud Rate Change pin (pin 5 on the Mini-DIN connector) to change Roomba’s baud rate. After
+turning on Roomba, wait 2 seconds and then pulse the Baud Rate Change low three times. Each pulse
+should last between 50 and 500 milliseconds. Roomba will communicate at 19200 baud until the
+processor loses battery power or the baud rate is explicitly changed by way of the OI.
+*/
+delay(5000);
+pinMode(2,OUTPUT);
+digitalWrite(2, HIGH);
 delay(1000);
-//Serial.print("<f-10000>");
-}
+digitalWrite(2, LOW);
+delay(400);
+digitalWrite(2, HIGH);
+delay(100);
+digitalWrite(2, LOW);
+delay(400);
+digitalWrite(2, HIGH);
+delay(100);
+digitalWrite(2, LOW);
+delay(400);
+digitalWrite(2, HIGH);
+delay(100);
+
+Serial.begin(19200);
+
 /***************** AP mode*******************/
-Serial1.print("Configuring access point...");
+
 WiFi.softAP(ssid, password);
-WiFi.printDiag(Serial1);
+//WiFi.printDiag(Serial1);
 IPAddress myIP = WiFi.softAPIP();
-Serial1.print("AP IP address: ");
-Serial1.println(myIP);
+
 
 /***********************************************/
 
@@ -1548,21 +1573,23 @@ webSocket.onEvent(webSocketEvent);
 // ArduinoOTA.setPassword((const char *)"123");
 
 ArduinoOTA.onStart([]() {
-Serial1.println("Start");
+//Serial1.println("Start");
 });
 ArduinoOTA.onEnd([]() {
-Serial1.println("\nEnd");
+//Serial1.println("\nEnd");
 });
 ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-Serial1.printf("Progress: %u%%\r", (progress / (total / 100)));
+//Serial1.printf("Progress: %u%%\r", (progress / (total / 100)));
 });
 ArduinoOTA.onError([](ota_error_t error) {
+/*
 Serial1.printf("Error[%u]: ", error);
 if (error == OTA_AUTH_ERROR) Serial1.println("Auth Failed");
 else if (error == OTA_BEGIN_ERROR) Serial1.println("Begin Failed");
 else if (error == OTA_CONNECT_ERROR) Serial1.println("Connect Failed");
 else if (error == OTA_RECEIVE_ERROR) Serial1.println("Receive Failed");
 else if (error == OTA_END_ERROR) Serial1.println("End Failed");
+*/
 });
 ArduinoOTA.begin();
 
@@ -1578,5 +1605,7 @@ void loop()
 webSocket.loop();
 server.handleClient();
 ArduinoOTA.handle();
-recvWithStartEndMarkers();
+//recvWithStartEndMarkers();
+//recvAndSendtoWebSocket();
+
 }

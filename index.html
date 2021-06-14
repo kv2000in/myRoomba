@@ -571,7 +571,7 @@
 		var checkobstacelenabled=true;
 		var checkobstacleinterval=500;
 		var obstacledistance=0; 
-		var recurringbatteryinfo = setInterval(getbatteryinfo, 10000); 
+		//var recurringbatteryinfo = setInterval(getbatteryinfo, 10000); 
 		var checkingrpmA;
 		var checkingrpmB;
 		var checkingobstacle;
@@ -1233,18 +1233,6 @@
 			{ 
 				console.log('websock open'); 
 				iswebsocketconnected=true;
-				if(smartbattery)
-				{
-					doSend("<A-D>"); //Send adjust PWM Digital on connecting }
-				} 
-				else 
-				{
-					doSend("<A-A>"); //Send adjust PWM  on connecting }
-					
-				}
-					//attach the steeringservo
-					
-					attachordetachservos("w","a");
 					
 					
 			}
@@ -1255,10 +1243,7 @@
 				iswebsocketconnected=false;
 				console.log('websock close'); 
 					//clear all the intervals - doesn't work. still dealing with "ghost" setIntervals
-					clearInterval(recurringbatteryinfo);
-					clearInterval(checkingobstacle);
-					clearInterval(checkingrpmA);
-					clearInterval(checkingrpmB);
+					
 					
 			}
 			websock.onerror = function(evt) 
