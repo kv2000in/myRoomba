@@ -548,49 +548,205 @@
 		passiveSupported = false;
 	}
 	
-	
-		//var PWMAMAX;
-		var PWMAMAX=255; //changed to allow for max PWM output.
-		var PWMBMAX;
-		var PWMAMIN=155; //since using 7.5 V regulated - easier to just set this manually. 
-		var PWMBMIN;
-		var PWMA;
-		var PWMB;
-		var PWMASTEPS = 25;
-		var PWMBSTEPS = 25;
-		var previousY =0;
-		var smartbattery;
-		var rpmenabled = true;
-		var encoder0ppr = 20;
-		var encoder1ppr = 20;
-		var encoder0prevreading=0;
-		var encoder1prevreading=0;
-		var currentrpmA=0;
-		var currentrpmB=0;
-		var checkrpminterval=500;
-		var checkobstacelenabled=true;
-		var checkobstacleinterval=500;
-		var obstacledistance=0; 
-		//var recurringbatteryinfo = setInterval(getbatteryinfo, 10000); 
-		var checkingrpmA;
-		var checkingrpmB;
-		var checkingobstacle;
-		
-		function sendcommandfromtext(){
+/* function for 2s complement*/        
+ function createToInt(size) {
+    if (size < 2) {
+        throw new Error('Minimum size is 2');
+    }
+    else if (size > 64) {
+        throw new Error('Maximum size is 64');
+    }
+
+    // Determine value range
+    const maxValue = (1 << (size - 1)) - 1;
+    const minValue = -maxValue - 1;
+
+    return (value) => {
+        if (value > maxValue || value < minValue) {
+            throw new Error(`Int${size} overflow`);
+        }
+
+        if (value < 0) {
+            return (1 << size) + value;
+        }
+        else {
+            return value;
+        }
+    };
+}
+        
+
+const toInt16 = createToInt(16); //using 2 byte numbers for velocity and radius
+
+/*
+
+myval = toInt16(-200).toString(16); // trying to run roomba backwards (-ve velocity) at 200 mm/s, myval 2 complements ff 38 . HIgh byte ff, low byte 38
+send as Serial sequence: [137] [Velocity high byte] [Velocity low byte] [Radius high byte] [Radius low byte]
+
+
+[137] [255] [56] [1] [244]
+
+if (myval.length>2){
+parseInt(myval.slice(-2), 16); //gives 56
+parseInt(myval.slice(0,myval.length-2), 16); // gives 255
+}
+else
+{
+parseInt(myval, 16);
+}
+
+
+*/
+        
+//ROOMBA OPCODES
+        var Start = 128;
+        var Stop = 173;
+        var Reset = 7;
+        var Safe = 131;
+        var Full = 132;
+        var Clean = 135;
+        var MaxClean = 136;
+        var Spot = 134;
+        var SeekDock = 143;
+		var PowerDown = 133;
+        var Drive = 137;
+        var DriveDirect = 145;
+        var DrivePWM = 146;
+        var RunMotorsFullSpeed = 138;
+        var PWMMotors = 144;
+        var maxFVelocity = 500; //mm/s
+        var maxRvelocity = -500;
+        var maxCWRadius = -2000; // mm
+        var maxCCWRadius = 2000;
+        
+
+        /*
+It takes four data bytes, interpreted as two 16-bit signed
+values using two’s complement. (http://en.wikipedia.org/wiki/Two%27s_complement) The first two bytes
+specify the average velocity of the drive wheels in millimeters per second (mm/s), with the high byte
+being sent first. The next two bytes specify the radius in millimeters at which Roomba will turn. The
+longer radii make Roomba drive straighter, while the shorter radii make Roomba turn more. The radius is
+measured from the center of the turning circle to the center of Roomba. A Drive command with a
+positive velocity and a positive radius makes Roomba drive forward while turning toward the left. A
+negative radius makes Roomba turn toward the right. Special cases for the radius make Roomba turn in
+place or drive straight, as specified below. A negative velocity makes Roomba drive backward.
+        
+        */
+        
+    function HbyteLbyte(val){
+        var myval = toInt16(val).toString(16);
+        var Hbyte = 0;
+        var Lbyte = 0;
+        if (myval.length>2){
+            
+            Lbyte =  parseInt(myval.slice(-2), 16); 
+            Hbyte= parseInt(myval.slice(0,myval.length-2), 16);
+        }
+        else {
+            
+            Lbyte = parseInt(myval, 16);
+        }
+        return Hbyte +":"+Lbyte;
+        
+    }
+        
+    function sendDrive(velocity,radius){
+        /*
+        Velocity (-500 – 500 mm/s)
+        Radius (-2000 – 2000 mm) 
+        
+        Radius Special Cases:
+        Straight = 32768 or 32767 = 0x8000 or 0x7FFF //int16 overflow with 32768. use 32767
+        Turn in place clockwise = -1 = 0xFFFF
+        Turn in place counter-clockwise = 1 = 0x0001
+        
+        (maxFVelocity<velocity)||(velocity<maxRvelocity)
+        */
+        
+        var myvelocity = HbyteLbyte(velocity);
+        var myradius = HbyteLbyte(radius);
+        var myvelocityHbyte= myvelocity.split(":")[0];
+        var myvelocityLbyte=myvelocity.split(":")[1];
+        var myradiusHbyte=myradius.split(":")[0];
+        var myradiusLbyte=myvelocity.split(":")[1];
+        
+        
+        console.log(myvelocityHbyte,myvelocityLbyte,myradiusHbyte,myradiusLbyte);
+    
+        doSend(Drive);doSend(myvelocityHbyte);doSend(myvelocityLbyte);doSend(myradiusHbyte);doSend(myradiusLbyte);
+    }  
+        
+    function sendDriveDirect(rightwheelvelocity,leftwheelvelocity){
+        /*Serial sequence: [145] [Right velocity high byte] [Right velocity low byte] [Left velocity high byte]
+[Left velocity low byte]*/
+        
+        var myRvelocity = HbyteLbyte(rightwheelvelocity);
+        var myLvelocity = HbyteLbyte(leftwheelvelocity);
+        var myRvelocityHbyte=myRvelocity.split(":")[0];
+        var myRvelocityLbyte=myRvelocity.split(":")[1];
+        var myLvelocityHbyte=myLvelocity.split(":")[0];
+        var myLvelocityLbyte=myRvelocity.split(":")[1];
+        
+
+        
+    console.log(myRvelocityHbyte,myRvelocityLbyte,myLvelocityHbyte,myLvelocityLbyte);
+       
+    doSend(DriveDirect);doSend(myRvelocityHbyte);doSend(myRvelocityLbyte);doSend(myLvelocityHbyte);doSend(myLvelocityLbyte);  
+    }
+    function sendDrivePWM(rightwheelpwm,leftwheelpwm){
+        /*Serial sequence: [146] [Right PWM high byte] [Right PWM low byte] [Left PWM high byte] [Left PWM
+low byte] 
+-255 to 255 A positive PWM makes that wheel
+drive forward, while a negative PWM makes it drive backward
+*/  
+        var myRpwm = HbyteLbyte(rightwheelpwm);
+        var myLpwm = HbyteLbyte(leftwheelpwm);
+        var myRpwmHbyte=myRpwm.split(":")[0];
+        var myRpwmLbyte=myRpwm.split(":")[1];
+        var myLpwmHbyte=myLpwm.split(":")[0];
+        var myLpwmLbyte=myLpwm.split(":")[1];
+        
+
+        
+    console.log(myRpwmHbyte,myRpwmLbyte,myLpwmHbyte,myLpwmLbyte);
+    doSend(DrivePWM);doSend(myRpwmHbyte);doSend(myRpwmLbyte);doSend(myLpwmHbyte);doSend(myLpwmLbyte);
+        
+    }
+    function sendRunMotorsFullSpeed(mainbrushoutward,sidebrushCW,mainbrush,vacuum,sidebrush){
+        /*
+        Bits 0-2: 0 = off, 1 = on at 100% pwm duty cycle
+ Bits 3 & 4: 0 = motor’s default direction, 1 = motor’s opposite direction. Default direction for the side
+brush is counterclockwise. Default direction for the main brush/flapper is inward.
+        To turn on the main brush inward and the side brush clockwise, send: [138] [13]
+        */
+        myval= "000"+mainbrushoutward+sidebrushCW+mainbrush+vacuum+sidebrush;
+        console.log(parseInt(myval,2));
+        //doSend(RunMotorsFullSpeed);doSend(parseInt(myval,2));
+    
+    }
+        function sendPWMMotors(mainbrushPWM,sidebrushPWM,vacuumPWM){
+            /*
+            [144] [Main Brush PWM] [Side Brush PWM] [Vacuum PWM]
+             With each data byte, you specify the duty cycle for the low side driver (max 128). For
+example, if you want to control a motor with 25% of battery voltage, choose a duty cycle of 128 * 25%
+= 32. The main brush and side brush can be run in either direction. The vacuum only runs forward.
+Positive speeds turn the motor in its default (cleaning) direction. Default direction for the side brush is
+counterclockwise. Default direction for the main brush/flapper is inward.
+
+ Main Brush and Side Brush duty cycle (-127 – 127)
+ Vacuum duty cycle (0 – 127)
+
+           doSend(144);doSend(-32);doSend(32);doSend(0); //works
+           */
+            doSend(PWMMotors);doSend(mainbrushPWM);doSend(sidebrushPWM);doSend(vacuumPWM);
+        }
+        
+        function sendcommandfromtext(){
 			
 			doSend(document.getElementById("mycommands").value);
 		}
 	
-	function getbatteryinfo(){
-		doSend("<B-V>");
-		doSend("<B-I>");
-		doSend("<B-T>");
-		doSend("<B-C>");
-		doSend("<B-R>");
-		doSend("<B-F>");    
-		doSend("<b-V>");
-		
-	}
+
 	
 	
 	function parse_incoming_websocket_messages(data){
@@ -613,218 +769,11 @@
 				}
 				
 	}
-	function checkrpm(whichencoder,zeroornot){
-		if(rpmenabled){
-			if (zeroornot=="0"){
-				if (whichencoder=="0"){
-					encoder0prevreading=0;  
-				}
-				else if (whichencoder=="1"){
-					encoder1prevreading=0;
-					
-				}
-				
-			}
-			doSend("<"+whichencoder+"-"+zeroornot+">");
-			
-		}
-		
-	}
-	function handlerpm(whichencoder,value){
-		switch(whichencoder){
-			case ("0"):
-			currentrpmA= ((value-encoder0prevreading)*(1000/checkrpminterval)*60)/encoder0ppr;
-			encoder0prevreading=value;
-			break;
-			case ("1"):
-			currentrpmB= ((value-encoder1prevreading)*(1000/checkrpminterval)*60)/encoder1ppr;
-			encoder1prevreading=value;
-			break;
-			
-			default:
-			console.log(whichencoder,value);
-			break;
-		}
-		
-	}
-	function handleobstacle(startorend){
-		if(checkobstacelenabled){
-			
-			
-			if (startorend=="start"){
-				checkingobstacle=setInterval(doSend,checkobstacleinterval,"<D-X>");
-			}
-			else if (startorend=="end")
-			{
-				clearInterval(checkingobstacle);
-			}
-			
-		}
-		
-	}
+
+
 	
-	function handlereturnsfromcommands(whichcommand){
-		
-			//C-F:OK , OK has been dealt with, C has been dealt with, now deal with F
-			switch(whichcommand){
-				case("F"):
-					//Motor A is rotating forward, change the status light and calculate RPM/Speed if RPM is enabled 
-						//checkrpm("0","0");
-							//checkingrpmA = setInterval(checkrpm,checkrpminterval,"0","X");
-								//handleobstacle("start");
-								break;
-								case("f"):
-									//Motor B is rotating forward, change the status light and calculate RPM/Speed if RPM is enabled
-										//checkrpm("1","0");
-											//checkingrpmB = setInterval(checkrpm,checkrpminterval,"1","X");
-											break;
-											case("R"):
-												//Motor A is rotating reverse, change the status light and calculate RPM/Speed if RPM is enabled
-													//checkrpm("0","0");
-														//checkingrpmA = setInterval(checkrpm,checkrpminterval,"0","X");
-														break;
-														case("r"):
-															//Motor B is rotating reverse, change the status light and calculate RPM/Speed if RPM is enabled
-																//checkrpm("1","0");
-																	//checkingrpmB = setInterval(checkrpm,checkrpminterval,"1","X");
-																	break;
-																	case("X"):
-																		//Motor A is stopped change the status light and disable RPM
-																			//clearInterval(checkingrpmA);
-																				//handleobstacle("end");
-																				break;
-																				case("x"):
-																					//Motor B is stopped, change the status light and disable RPM.
-																						//clearInterval(checkingrpmB);
-																						break;
-																						default:
-																						console.log(whichcommand);
-																						break;
-			}
-			
-	}
-	function togglelightswitch()
-	{
-		var myswitch=document.getElementById("lightswitch");
-		if (myswitch.checked){
-			doSend("<K-N>");
-		}
-		else {
-			doSend("<K-O>");
-		}
-	}        
-	function response_based_on_first_char(mylocalvar){
-			//mylocalvar = S-255 or C-F or H-135 etc , see above
-			switch(mylocalvar.split("-")[0])
-			{
-					//PWMAMAX
-					case ("H"):
-						//PWMAMAX=Number(mylocalvar.split("-")[1]);
-						break;
-							//PWMBMAX
-							case ("h"):
-							PWMBMAX=Number(mylocalvar.split("-")[1]);
-							break;
-								//PWMAMIN    
-								case ("L"):
-									//PWMAMIN=Number(mylocalvar.split("-")[1]);
-									break;
-										//PWMBMIN    
-										case ("l"):
-										PWMBMIN=Number(mylocalvar.split("-")[1]);
-										break;
-											//PWMA    
-											case ("S"):
-											PWMA=Number(mylocalvar.split("-")[1]);
-											break;
-												//PWMB    
-												case ("s"):
-												PWMB=Number(mylocalvar.split("-")[1]);
-												break;
-													//Commands    
-													case ("C"):
-													handlereturnsfromcommands(mylocalvar.split("-")[1]);
-													break;
-														//Servo W angle    
-														case ("W"):
-														document.getElementById("mylocalconsole").innerHTML=mylocalvar;
-														break;
-															//Servo X angle
-															case ("X"):
-															document.getElementById("mylocalconsole").innerHTML=mylocalvar;
-															break;
-																//Servo Y angle
-																case ("Y"):
-																document.getElementById("mylocalconsole").innerHTML=mylocalvar;
-																break;
-																	//Servo Z angle    
-																	case ("Z"):
-																	document.getElementById("mylocalconsole").innerHTML=mylocalvar;
-																	break;
-																		//Battery Smbus Voltage    
-																		case ("V"):
-																		document.getElementById("smbusbatteryV").innerHTML=mylocalvar.split("-")[1];
-																		break;
-																			//Battery ADC analog Voltage    
-																			case ("v"):
-																			document.getElementById("analogbatteryV").innerHTML=mylocalvar.split("-")[1];
-																			break;
-																				//Battery smbus current - current returns as -144 (negative 144) so its I--144 hence 2nd element.
-																				case ("I"):
-																				document.getElementById("smbusbatteryI").innerHTML=mylocalvar.split("-")[2];
-																				break;
-																					//Battery smbus remaining capacity (mAH)
-																					case ("R"):
-																					document.getElementById("smbusbatteryR").innerHTML=mylocalvar.split("-")[1];
-																					break;
-																						//Battery smbus remaining charge (%)    
-																						case ("c"):
-																						document.getElementById("smbusbatteryc").innerHTML=mylocalvar.split("-")[1];
-																						break;
-																							//Battery smbus temperature (degC)    
-																							case ("T"):
-																							document.getElementById("smbusbatteryT").innerHTML=mylocalvar.split("-")[1];
-																							break;
-																								//Battery smbus full charge capacity (mAH)    
-																								case ("F"):
-																								document.getElementById("smbusbatteryF").innerHTML=mylocalvar.split("-")[1];
-																								break;
-																									//Battery SMBUS LED on or off    
-																									case ("O"):
-																									document.getElementById("mylocalconsole").innerHTML=mylocalvar;
-																									break;
-																										//Truck light Leds
-																										case ("K"):
-																										
-																										if (mylocalvar.split("-")[1] == "N"){document.getElementById("pwrlight").style.backgroundColor="red";}
-																										if (mylocalvar.split("-")[1] == "O"){document.getElementById("pwrlight").style.backgroundColor="white";}
-																										break;
-																											//Truck siren
-																											case ("N"):
-																											document.getElementById("mylocalconsole").innerHTML=mylocalvar;
-																											break;
-																												//encoder0 reading
-																												case ("0"):
-																												handlerpm("0",Number(mylocalvar.split("-")[1]));
-																												break;
-																													//encoder1 reading
-																													case ("1"):
-																													handlerpm("1",Number(mylocalvar.split("-")[1]));
-																													break;
-																														//obstacle reading
-																														case ("D"):
-																														obstacledistance=Number(mylocalvar.split("-")[1]);
-																														break;
-																														
-																														default:
-																														document.getElementById("mylocalconsole").innerHTML=mylocalvar;
-																														break;
-			}
-	}
-	function attachordetachservos(whichservo,attachordetach){
-		doSend("<"+whichservo+"-"+attachordetach+">");
-		
-	}
+
+
 	
 	/*function handleOrientation(event) {
 	 var y = event.gamma;
@@ -1252,15 +1201,15 @@
 			}
 			websock.onmessage = function(evt) 
 			{ 
-				console.log(evt); 
-					//console.log(evt.data);
-					parse_incoming_websocket_messages(evt.data);
+				//console.log(evt); 
+					console.log(evt.data);
+					//parse_incoming_websocket_messages(evt.data);
 			}
 	}
 	function doClose()
 	{
 			//detach steering servo
-			attachordetachservos("w","d");
+			//attachordetachservos("w","d");
 			
 			websock.close();
 	}

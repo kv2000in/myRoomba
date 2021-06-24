@@ -1292,9 +1292,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(<!DOCTYPE html>
       }
       websock.onmessage = function(evt) 
       { 
-        console.log(evt); 
-          //console.log(evt.data);
-          parse_incoming_websocket_messages(evt.data);
+        //console.log(evt); 
+          console.log(evt.data);
+          //parse_incoming_websocket_messages(evt.data);
       }
   }
   function doClose()
@@ -1452,7 +1452,7 @@ recvInProgress = true;
 
 /*******************Serial Read Functions ************************/
 /*****generic serial read and send to websocket function ***************/
-/*
+
 void recvAndSendtoWebSocket(){
 byte  mybytes[64];
 if (Serial.available()>0){
@@ -1464,7 +1464,7 @@ mybytes[p] = Serial.read();
   webSocket.sendBIN(0,mybytes,mylength);
 }
 }
-
+/*
 bool getDataFromROOMBA()(uint8_t* dest, uint8_t len)
 {
   while (len-- > 0)
@@ -1606,6 +1606,6 @@ webSocket.loop();
 server.handleClient();
 ArduinoOTA.handle();
 //recvWithStartEndMarkers();
-//recvAndSendtoWebSocket();
+recvAndSendtoWebSocket();
 
 }
