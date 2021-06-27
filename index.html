@@ -1,4 +1,5 @@
 !DOCTYPE html>
+
 <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
@@ -80,7 +81,7 @@
                 position: fixed;
                 height: 10%;
                 background: white;
-                top:0%;
+                top: 0%;
             }
 
             .selectables {
@@ -128,15 +129,16 @@
 
             .fifty {
                 width: 50%;
+                position: relative;
             }
 
             .sixty {
                 width: 60%;
             }
+
             .eighty {
                 width: 80%;
             }
-
 
             .horizontalslider {
                 position: relative;
@@ -174,7 +176,6 @@
                 align-self: center;
                 height: 100%;
                 margin: 0 auto;
-                
             }
 
             .genericbuttons {
@@ -328,8 +329,24 @@
                 -ms-transform: translateX(26px);
                 transform: translateX(26px);
             }
-            #top-left-4{
+
+            #top-left-4 {
                 margin: 0;
+            }
+
+            #top-left-5 {
+                position: absolute;
+                top: 0%;
+                right: 0%;
+            }
+
+            .contrast {
+                color: white;
+            }
+
+            th {
+                font-size: 8;
+                font-style: normal;
             }
         </style>
         <title>myRover</title>
@@ -352,53 +369,126 @@
         </div>
         <div class="half" id="top-half">
             <div class="ten vertical3slider" id="top-left-1" id="gearB">
-                
-                    <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(Start)'>Start
+                <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(Start)'>Start
 					</button>
-                    <button class="gearbuttons" id="stopgearbuttonB" onclick='doSend(Stop)'>Stop
+                <button class="gearbuttons" id="stopgearbuttonB" onclick='doSend(Stop)'>Stop
 					</button>
-                     <button class="gearbuttons" id="reversegearbuttonB" onclick='doSend(Safe)'>Safe
+                <button class="gearbuttons" id="reversegearbuttonB" onclick='doSend(Safe)'>Safe
 					</button>
-                    <button class="gearbuttons" id="reversegearbuttonB" onclick='doSend(Full)'>Full
+                <button class="gearbuttons" id="reversegearbuttonB" onclick='doSend(Full)'>Full
 					</button>
-               
             </div>
             <div class="ten vertical2slider" id="top-left-2">
-               
-                    <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(Reset)'>Reset
+                <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(Reset)'>Reset
 					</button>
-                    <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(PowerDown)'>Power
+                <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(PowerDown)'>Power
 					</button>
-                    
-               
             </div>
             <div class="ten vertical2slider" id="top-left-3">
-               
-                    <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(Clean)'>Clean
+                <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(Clean)'>Clean
 					</button>
-                    <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(MaxClean)'>MaxClean
+                <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(MaxClean)'>MaxClean
 					</button>
-                    <button class="gearbuttons" id="stopgearbuttonB" onclick='doSend(Spot)'>Spot
+                <button class="gearbuttons" id="stopgearbuttonB" onclick='doSend(Spot)'>Spot
 					</button>
-                    <button class="gearbuttons" id="reversegearbuttonB" onclick='doSend(SeekDock)'>Dock
+                <button class="gearbuttons" id="reversegearbuttonB" onclick='doSend(SeekDock)'>Dock
 					</button>
-               
             </div>
-            
             <div class="fifty">
-                 <div class="twenty vertical2slider" id="top-left-4">
-                <button class="gearbuttons" id="connectWS" onclick='doConnect()'>Connect
+                <div class="twenty vertical2slider" id="top-left-4">
+                    <button class="gearbuttons" id="connectWS" onclick='doConnect()'>Connect
 				</button>
-                <button class="gearbuttons" id="closeWS" onclick='doClose()'>Close
+                    <button class="gearbuttons" id="closeWS" onclick='doClose()'>Close
 				</button>
-                <button class="gearbuttons" id="reloadfromsource" onclick='location.reload()'>Reload
+                    <button class="gearbuttons" id="reloadfromsource" onclick='location.reload()'>Reload
 				</button>
-                <button class="gearbuttons" id="getbatteryinforbtn" onclick='getbatteryinfo'>Battery
+                    <button class="gearbuttons" id="getbatteryinforbtn" onclick='getbatteryinfo'>Battery
 				</button>
-            </div>
-                <div class="eighty vertical2slider" id="top-left-5">
-                
-            </div>
+                </div>
+                <div class="eighty" id="top-left-5">
+                    <table>
+                        <tr>
+                            <th rowspan="2">
+                                <label class="contrast">Side Brush</label>
+                            </th>
+                            <td>
+                                <input type="range" id="sidebrushPWM" min="-127" max="127" value="0" step="5">
+                            </td>
+                            <td>
+                                <input type="radio" id="sidebrushccw" name="sidebrushdirection" checked>
+                                <label class="contrast">ccw</label>
+                                <input type="radio" id="sidebrushcw" name="sidebrushdirection">
+                                <label class="contrast">cw</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button id="resetsidebrush" onclick='document.getElementById("sidebrushPWM").value="0"'>Reset</button>
+                            </td>
+                            <td>
+                                <input type="radio" id="sidebrushon" name="sidebrushonoff">
+                                <label class="contrast">on</label>
+                                <input type="radio" id="sidebrushoff" name="sidebrushonoff" checked>
+                                <label class="contrast">off</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th rowspan="2">
+                                <label class="contrast">Main Brush</label>
+                            </th>
+                            <td>
+                                <input type="range" id="mainbrushPWM" min="-127" max="127" value="0" step="5">
+                            </td>
+                            <td>
+                                <input type="radio" id="mainbrushin" name="mainbrushdirection" checked>
+                                <label class="contrast">in</label>
+                                <input type="radio" id="mainbrushout" name="mainbrushdirection">
+                                <label class="contrast">out</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button id="resetmainbrush" onclick='document.getElementById("mainbrushPWM").value = "0"'>Reset</button>
+                            </td>
+                            <td>
+                                <input type="radio" id="mainbrushon" name="mainbrushonoff">
+                                <label class="contrast">on</label>
+                                <input type="radio" id="mainbrushoff" name="mainbrushonoff" checked>
+                                <label class="contrast">off</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th rowspan="2">
+                                <label class="contrast">Vacuum</label>
+                            </th>
+                            <td>
+                                <input type="range" id="vacuumPWM" min="0" max="127" value="0" step="5">
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button id="resetvacuum" onclick='document.getElementById("vacuumPWM").value = "0"'>Reset</button>
+                            </td>
+                            <td>
+                                <input type="radio" id="vacuumon" name="vacuumonoff">
+                                <label class="contrast">on</label>
+                                <input type="radio" id="vacuumoff" name="vacuumonoff" checked>
+                                <label class="contrast">off</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td>
+                                <button id="sendmotorspwm" onclick='sendPWMMotors(document.getElementById("mainbrushPWM").value,document.getElementById("sidebrushPWM").value,document.getElementById("vacuumPWM").value)'>Send</button>
+                                <button id="allmotorsoff" onclick='sendRunMotorsFullSpeed(0,0,0,0,0)'>OFF</button>
+                            </td>
+                            <td>
+                                <button id="sendmotors" onclick='sendRunMotorsFullSpeed(document.getElementById("mainbrushout").checked? 1:0, document.getElementById("sidebrushcw").checked? 1:0, document.getElementById("mainbrushon").checked? 1:0,document.getElementById("vacuumon").checked? 1:0,document.getElementById("sidebrushon").checked? 1:0)'>Send</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="half bottom" id="bottom-half">
@@ -524,7 +614,8 @@ parseInt(myval, 16);
         var maxCCWRadius = 2000;
         var velocitySteps = 20;
         //steps in mm/s
-        var currentRadius = 32767; //default straight
+        var currentRadius = 32767;
+        //default straight
         var currentVelocity = 0;
         /*
 It takes four data bytes, interpreted as two 16-bit signed
@@ -575,7 +666,7 @@ place or drive straight, as specified below. A negative velocity makes Roomba dr
             var myradiusHbyte = myradius.split(":")[0];
             var myradiusLbyte = myradius.split(":")[1];
 
-            console.log(myvelocityHbyte, myvelocityLbyte, myradiusHbyte, myradiusLbyte);
+            //console.log(myvelocityHbyte, myvelocityLbyte, myradiusHbyte, myradiusLbyte);
 
             doSend(Drive);
             doSend(myvelocityHbyte);
@@ -632,8 +723,9 @@ brush is counterclockwise. Default direction for the main brush/flapper is inwar
         To turn on the main brush inward and the side brush clockwise, send: [138] [13]
         */
             myval = "000" + mainbrushoutward + sidebrushCW + mainbrush + vacuum + sidebrush;
-            console.log(parseInt(myval, 2));
-            //doSend(RunMotorsFullSpeed);doSend(parseInt(myval,2));
+            //console.log(parseInt(myval, 2));
+            doSend(RunMotorsFullSpeed);
+            doSend(parseInt(myval, 2));
 
         }
         function sendPWMMotors(mainbrushPWM, sidebrushPWM, vacuumPWM) {
@@ -780,7 +872,7 @@ counterclockwise. Default direction for the main brush/flapper is inward.
                 //else if (myangle<2000){myangle= 2000-myangle;}  
                 //else {}
                 //myangle = 4000-myangle;
-                
+
             }
 
             if (Math.abs(myangle - previoussentangle) > steeringanlgesteps) {
@@ -789,7 +881,7 @@ counterclockwise. Default direction for the main brush/flapper is inward.
                 //if (myangle >= steeringservominangle && myangle <= steeringservomaxangle){
                 //console.log(myangle); 
                 currentRadius = myangle;
-                sendDrive(currentVelocity,currentRadius);
+                sendDrive(currentVelocity, currentRadius);
                 previoussentangle = myangle;
 
                 // }
@@ -803,8 +895,8 @@ counterclockwise. Default direction for the main brush/flapper is inward.
         draggable.addEventListener('touchend', function(event) {
             draggable.style.left = '100px';
             draggable.style.top = '-50px';
-            currentRadius=32767;
-            sendDrive(currentVelocity,currentRadius);
+            currentRadius = 32767;
+            sendDrive(currentVelocity, currentRadius);
         }, passiveSupported ? {
             passive: true
         } : false);
@@ -891,7 +983,7 @@ counterclockwise. Default direction for the main brush/flapper is inward.
                 if (Math.abs(valuetosendA - mypreviousPWMAsent) > velocitySteps) {
 
                     console.log(valuetosendA);
-                    sendDrive(valuetosendA,currentRadius);
+                    sendDrive(valuetosendA, currentRadius);
 
                     mypreviousPWMAsent = valuetosendA;
                     currentVelocity = valuetosendA;
@@ -903,15 +995,13 @@ counterclockwise. Default direction for the main brush/flapper is inward.
                 if (Math.abs(valuetosendA - mypreviousPWMAsent) > velocitySteps) {
 
                     console.log(valuetosendA);
-                    sendDrive(valuetosendA,currentRadius);
+                    sendDrive(valuetosendA, currentRadius);
 
                     mypreviousPWMAsent = valuetosendA;
                     currentVelocity = valuetosendA;
 
-                } else {
-                //stop
-                
-                
+                } else {//stop
+
                 }
 
             }
@@ -924,16 +1014,13 @@ counterclockwise. Default direction for the main brush/flapper is inward.
         mysliderA.addEventListener('touchend', function(event) {
             motorAmoving = false;
             currentVelocity = 0;
-            sendDrive(currentVelocity,currentRadius);
-            
+            sendDrive(currentVelocity, currentRadius);
+
             mysliderA.style.top = 40 + '%';
 
         }, passiveSupported ? {
             passive: true
         } : false);
-
-
-
 
         var onlongtouch;
         var timer;
