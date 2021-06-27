@@ -120,6 +120,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(!DOCTYPE html>
                 position: fixed;
                 height: 10%;
                 background: white;
+                top:0%;
             }
 
             .selectables {
@@ -172,6 +173,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(!DOCTYPE html>
             .sixty {
                 width: 60%;
             }
+            .eighty {
+                width: 80%;
+            }
+
 
             .horizontalslider {
                 position: relative;
@@ -197,7 +202,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(!DOCTYPE html>
 
             .gearbuttons {
                 width: 100%;
-                height: 33.3%;
+                height: 25%;
                 border-radius: 20%;
             }
 
@@ -209,7 +214,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(!DOCTYPE html>
                 align-self: center;
                 height: 100%;
                 margin: 0 auto;
-                display: flex;
+                
             }
 
             .genericbuttons {
@@ -363,6 +368,9 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(!DOCTYPE html>
                 -ms-transform: translateX(26px);
                 transform: translateX(26px);
             }
+            #top-left-4{
+                margin: 0;
+            }
         </style>
         <title>myRover</title>
     </head>
@@ -384,54 +392,53 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(!DOCTYPE html>
         </div>
         <div class="half" id="top-half">
             <div class="ten vertical3slider" id="top-left-1" id="gearB">
-                <div class="three-slider" id="gearBslider">
-                    <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend("<C-f>")'>F
+                
+                    <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(Start)'>Start
           </button>
-                    <button class="gearbuttons" id="stopgearbuttonB" onclick='doSend("<C-x>")'>X
+                    <button class="gearbuttons" id="stopgearbuttonB" onclick='doSend(Stop)'>Stop
           </button>
-                    <button class="gearbuttons" id="reversegearbuttonB" onclick='doSend("<C-r>")'>R
+                     <button class="gearbuttons" id="reversegearbuttonB" onclick='doSend(Safe)'>Safe
           </button>
-                </div>
+                    <button class="gearbuttons" id="reversegearbuttonB" onclick='doSend(Full)'>Full
+          </button>
+               
             </div>
             <div class="ten vertical2slider" id="top-left-2">
-                <div class="slidercolumn" id="slidercolumnB">
-                    <button class="sliderbuttons" id="speedcontrolB">S
-        </button>
-                </div>
+               
+                    <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(Reset)'>Reset
+          </button>
+                    <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(PowerDown)'>Power
+          </button>
+                    
+               
             </div>
             <div class="ten vertical2slider" id="top-left-3">
-                <div class="slidercolumn servoslidercolumn" id="slidercolumnX">
-                    <button class="servosliderbuttons" id="speedcontrolX">X
-        </button>
-                </div>
+               
+                    <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(Clean)'>Clean
+          </button>
+                    <button class="gearbuttons" id="forwardgearbuttonB" onclick='doSend(MaxClean)'>MaxClean
+          </button>
+                    <button class="gearbuttons" id="stopgearbuttonB" onclick='doSend(Spot)'>Spot
+          </button>
+                    <button class="gearbuttons" id="reversegearbuttonB" onclick='doSend(SeekDock)'>Dock
+          </button>
+               
             </div>
-            <div class="ten vertical2slider" id="top-left-4">
-                <div class="slidercolumn servoslidercolumn" id="slidercolumnY">
-                    <button class="servosliderbuttons" id="speedcontrolY">Y
-        </button>
-                </div>
-            </div>
-            <div class="ten vertical2slider" id="top-left-5">
-                <div class="slidercolumn servoslidercolumn" id="slidercolumnZ">
-                    <button class="servosliderbuttons" id="speedcontrolZ">Z
-        </button>
-                </div>
-            </div>
+            
             <div class="fifty">
-                <!-- pwrlight01 = pwrlight server 0 and gpio 1-->
-                <button class="pwrlight" id="pwrlight"></button>
-                <label class="switch">
-                    <input type="checkbox" id="lightswitch" onclick='togglelightswitch()'>
-                    <div class="slider"></div>
-                </label>
-                <button class="genericbuttons" id="connectWS" onclick='doConnect()'>Connect
+                 <div class="twenty vertical2slider" id="top-left-4">
+                <button class="gearbuttons" id="connectWS" onclick='doConnect()'>Connect
         </button>
-                <button class="genericbuttons" id="closeWS" onclick='doClose()'>Close
+                <button class="gearbuttons" id="closeWS" onclick='doClose()'>Close
         </button>
-                <button class="genericbuttons" id="reloadfromsource" onclick='location.reload()'>Reload
+                <button class="gearbuttons" id="reloadfromsource" onclick='location.reload()'>Reload
         </button>
-                <button class="genericbuttons" id="getbatteryinforbtn" onclick='getbatteryinfo'>Battery
+                <button class="gearbuttons" id="getbatteryinforbtn" onclick='getbatteryinfo'>Battery
         </button>
+            </div>
+                <div class="eighty vertical2slider" id="top-left-5">
+                
+            </div>
             </div>
         </div>
         <div class="half bottom" id="bottom-half">
@@ -558,6 +565,7 @@ parseInt(myval, 16);
         var velocitySteps = 20;
         //steps in mm/s
         var currentRadius = 32767; //default straight
+        var currentVelocity = 0;
         /*
 It takes four data bytes, interpreted as two 16-bit signed
 values using two’s complement. (http://en.wikipedia.org/wiki/Two%27s_complement) The first two bytes
@@ -821,6 +829,7 @@ counterclockwise. Default direction for the main brush/flapper is inward.
                 //if (myangle >= steeringservominangle && myangle <= steeringservomaxangle){
                 //console.log(myangle); 
                 currentRadius = myangle;
+                sendDrive(currentVelocity,currentRadius);
                 previoussentangle = myangle;
 
                 // }
@@ -835,24 +844,11 @@ counterclockwise. Default direction for the main brush/flapper is inward.
             draggable.style.left = '100px';
             draggable.style.top = '-50px';
             currentRadius=32767;
+            sendDrive(currentVelocity,currentRadius);
         }, passiveSupported ? {
             passive: true
         } : false);
-        function setmidsteeringangle(trimwhichway) {
-            if (trimwhichway == "left") {
-                steeringservomidangle = steeringservomidangle - 5;
-            } else if (trimwhichway == "right") {
-                steeringservomidangle = steeringservomidangle + 5;
-            }
-            document.getElementById("mylocalconsole").innerHTML = "Mid=" + steeringservomidangle;
-        }
-        function gotosteeringmidposition() {
-            draggable.style.left = '100px';
-            draggable.style.top = '-50px';
 
-            doSend("<W-" + steeringservomidangle + ">");
-
-        }
         //sliderbasefunction returns at what percent of total slidable height -is the slider at
         function sliderbasefunction(event, whocalledme, whichelement) {
             var mytotalheight;
@@ -899,11 +895,6 @@ counterclockwise. Default direction for the main brush/flapper is inward.
             return Math.round(mypercentageslide);
         }
         var mysliderA = document.getElementById('speedcontrolA');
-        var mysliderB = document.getElementById('speedcontrolB');
-        //servo sliders - somewhat similar to speed sliders so kept the same nomenclature
-        var mysliderX = document.getElementById('speedcontrolX');
-        var mysliderY = document.getElementById('speedcontrolY');
-        var mysliderZ = document.getElementById('speedcontrolZ');
         var mypreviousPWMAsent = 0;
         var mypreviousPWMBsent = 0;
         var mypreviousvalueXsent = 0;
@@ -943,6 +934,7 @@ counterclockwise. Default direction for the main brush/flapper is inward.
                     sendDrive(valuetosendA,currentRadius);
 
                     mypreviousPWMAsent = valuetosendA;
+                    currentVelocity = valuetosendA;
                 }
 
             } else if (whatpercentslide > 60) {
@@ -954,6 +946,7 @@ counterclockwise. Default direction for the main brush/flapper is inward.
                     sendDrive(valuetosendA,currentRadius);
 
                     mypreviousPWMAsent = valuetosendA;
+                    currentVelocity = valuetosendA;
 
                 } else {
                 //stop
@@ -970,112 +963,18 @@ counterclockwise. Default direction for the main brush/flapper is inward.
         //when releasing speedcontrol button - it returns to mid position and motor stops.
         mysliderA.addEventListener('touchend', function(event) {
             motorAmoving = false;
-            sendDrive(0,currentRadius);
+            currentVelocity = 0;
+            sendDrive(currentVelocity,currentRadius);
+            
             mysliderA.style.top = 40 + '%';
 
         }, passiveSupported ? {
             passive: true
         } : false);
 
-        mysliderB.addEventListener('touchmove', function(event) {
-            var whatpercentslide = sliderbasefunction(event, this, "B");
 
-            valuetosendB = Math.round(PWMBMIN + ((PWMBMAX - PWMBMIN) * (whatpercentslide / 100)));
-            //console.log("whatpercentslide = "+whatpercentslide+ "valuetosend ="+valuetosend+"PWMAMAX = "+PWMAMAX+ "PWMAMIN = "+PWMAMIN);
-            if (Math.abs(Number(valuetosendB) - Number(mypreviousPWMBsent)) > Number(PWMBSTEPS)) {
 
-                doSend("<s-" + valuetosendB + ">");
-                //console.log("<s-"+valuetosendB+">");
-                mypreviousPWMBsent = valuetosendB;
-            }
 
-        }, passiveSupported ? {
-            passive: true
-        } : false);
-
-        mysliderX.addEventListener('touchstart', function(event) {
-
-            attachordetachservos("x", "a");
-
-        }, passiveSupported ? {
-            passive: true
-        } : false);
-        mysliderX.addEventListener('touchend', function(event) {
-
-            attachordetachservos("x", "d");
-
-        }, passiveSupported ? {
-            passive: true
-        } : false);
-        mysliderX.addEventListener('touchmove', function(event) {
-            var whatpercentslide = sliderbasefunction(event, this, "X");
-
-            valuetosendX = Math.round(servoXminangle + ((servoXmaxangle - servoXminangle) * (whatpercentslide / 100)));
-            if (Math.abs(Number(valuetosendX) - Number(mypreviousvalueXsent)) > Number(servoXanglesteps)) {
-
-                doSend("<X-" + valuetosendX + ">");
-                //console.log("<X-"+valuetosendX+">");
-                mypreviousvalueXsent = valuetosendX;
-            }
-
-        }, passiveSupported ? {
-            passive: true
-        } : false);
-        mysliderY.addEventListener('touchstart', function(event) {
-
-            attachordetachservos("y", "a");
-
-        }, passiveSupported ? {
-            passive: true
-        } : false);
-        mysliderY.addEventListener('touchend', function(event) {
-
-            attachordetachservos("y", "d");
-
-        }, passiveSupported ? {
-            passive: true
-        } : false);
-        mysliderY.addEventListener('touchmove', function(event) {
-            var whatpercentslide = sliderbasefunction(event, this, "Y");
-
-            valuetosendY = Math.round(servoYminangle + ((servoYmaxangle - servoYminangle) * (whatpercentslide / 100)));
-            if (Math.abs(Number(valuetosendY) - Number(mypreviousvalueYsent)) > Number(servoYanglesteps)) {
-
-                doSend("<Y-" + valuetosendY + ">");
-                //console.log("<Y-"+valuetosendY+">");
-                mypreviousvalueYsent = valuetosendY;
-            }
-
-        }, passiveSupported ? {
-            passive: true
-        } : false);
-        mysliderZ.addEventListener('touchstart', function(event) {
-
-            attachordetachservos("z", "a");
-
-        }, passiveSupported ? {
-            passive: true
-        } : false);
-        mysliderZ.addEventListener('touchend', function(event) {
-
-            attachordetachservos("z", "d");
-
-        }, passiveSupported ? {
-            passive: true
-        } : false);
-        mysliderZ.addEventListener('touchmove', function(event) {
-            var whatpercentslide = sliderbasefunction(event, this, "Z");
-            valuetosendZ = Math.round(servoZminangle + ((servoZmaxangle - servoZminangle) * (whatpercentslide / 100)));
-            if (Math.abs(Number(valuetosendZ) - Number(mypreviousvalueZsent)) > Number(servoZanglesteps)) {
-
-                doSend("<Z-" + valuetosendZ + ">");
-                //console.log("<Z-"+valuetosendZ+">");
-                mypreviousvalueZsent = valuetosendZ;
-            }
-
-        }, passiveSupported ? {
-            passive: true
-        } : false);
         var onlongtouch;
         var timer;
         var touchduration = 750;
@@ -1133,7 +1032,7 @@ counterclockwise. Default direction for the main brush/flapper is inward.
             if (iswebsocketconnected == true) {
                 if (websock.readyState == websock.OPEN) {
                     websock.send(message);
-
+                    //console.log(message);
                 } else {
 
                     console.log("websocket is in an indeterminate state");
