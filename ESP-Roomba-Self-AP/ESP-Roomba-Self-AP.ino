@@ -38,8 +38,8 @@ static const char PROGMEM CHECK_SENSORS[] = R"rawliteral(<!doctype html>
 </body>
 </html>
 )rawliteral";
-static const char PROGMEM INDEX_HTML[] = R"rawliteral(!DOCTYPE html>
-
+static const char PROGMEM INDEX_HTML[] = R"rawliteral(
+<!DOCTYPE html>
 <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
@@ -378,15 +378,53 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(!DOCTYPE html>
                 position: absolute;
                 top: 0%;
                 right: 0%;
+                height: 100%
             }
 
             .contrast {
                 color: white;
             }
 
-            th {
-                font-size: 8;
-                font-style: normal;
+            .row-1 {
+                position: absolute;
+                top: 0%;
+                right: 0;
+                height: 33%;
+                width: 100%;
+            }
+
+            .row-2 {
+                position: absolute;
+                top: 33.3%;
+                right: 0;
+                height: 33%;
+                width: 100%;
+            }
+
+            .row-3 {
+                position: absolute;
+                top: 66.6%;
+                right: 0;
+                height: 33%;
+                width: 100%;
+            }
+
+            .col-1 {
+                position: absolute;
+                width: 15%;
+                right: 85%
+            }
+
+            .col-2 {
+                position: absolute;
+                width: 47%;
+                right: 38%;
+            }
+
+            .col-3 {
+                position: absolute;
+                width: 38%;
+                right: 0;
             }
         </style>
         <title>myRover</title>
@@ -446,88 +484,67 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(!DOCTYPE html>
         </button>
                 </div>
                 <div class="eighty" id="top-left-5">
-                    <table>
-                        <tr>
-                            <th rowspan="2">
-                                <label class="contrast">Side Brush</label>
-                            </th>
-                            <td>
-                                <input type="range" id="sidebrushPWM" min="-127" max="127" value="0" step="5">
-                            </td>
-                            <td>
-                                <input type="radio" id="sidebrushccw" name="sidebrushdirection" checked>
-                                <label class="contrast">ccw</label>
-                                <input type="radio" id="sidebrushcw" name="sidebrushdirection">
-                                <label class="contrast">cw</label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <button id="resetsidebrush" onclick='document.getElementById("sidebrushPWM").value="0"'>Reset</button>
-                            </td>
-                            <td>
-                                <input type="radio" id="sidebrushon" name="sidebrushonoff">
-                                <label class="contrast">on</label>
-                                <input type="radio" id="sidebrushoff" name="sidebrushonoff" checked>
-                                <label class="contrast">off</label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th rowspan="2">
-                                <label class="contrast">Main Brush</label>
-                            </th>
-                            <td>
-                                <input type="range" id="mainbrushPWM" min="-127" max="127" value="0" step="5">
-                            </td>
-                            <td>
-                                <input type="radio" id="mainbrushin" name="mainbrushdirection" checked>
-                                <label class="contrast">in</label>
-                                <input type="radio" id="mainbrushout" name="mainbrushdirection">
-                                <label class="contrast">out</label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <button id="resetmainbrush" onclick='document.getElementById("mainbrushPWM").value = "0"'>Reset</button>
-                            </td>
-                            <td>
-                                <input type="radio" id="mainbrushon" name="mainbrushonoff">
-                                <label class="contrast">on</label>
-                                <input type="radio" id="mainbrushoff" name="mainbrushonoff" checked>
-                                <label class="contrast">off</label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th rowspan="2">
-                                <label class="contrast">Vacuum</label>
-                            </th>
-                            <td>
-                                <input type="range" id="vacuumPWM" min="0" max="127" value="0" step="5">
-                            </td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <button id="resetvacuum" onclick='document.getElementById("vacuumPWM").value = "0"'>Reset</button>
-                            </td>
-                            <td>
-                                <input type="radio" id="vacuumon" name="vacuumonoff">
-                                <label class="contrast">on</label>
-                                <input type="radio" id="vacuumoff" name="vacuumonoff" checked>
-                                <label class="contrast">off</label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            <td>
-                                <button id="sendmotorspwm" onclick='sendPWMMotors(document.getElementById("mainbrushPWM").value,document.getElementById("sidebrushPWM").value,document.getElementById("vacuumPWM").value)'>Send</button>
-                                <button id="allmotorsoff" onclick='sendRunMotorsFullSpeed(0,0,0,0,0)'>OFF</button>
-                            </td>
-                            <td>
-                                <button id="sendmotors" onclick='sendRunMotorsFullSpeed(document.getElementById("mainbrushout").checked? 1:0, document.getElementById("sidebrushcw").checked? 1:0, document.getElementById("mainbrushon").checked? 1:0,document.getElementById("vacuumon").checked? 1:0,document.getElementById("sidebrushon").checked? 1:0)'>Send</button>
-                            </td>
-                        </tr>
-                    </table>
+                    <div class="row-1">
+                        <div class="col-1">
+                            <label class="contrast">Side Brush</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="range" id="sidebrushPWM" min="-127" max="127" value="0" step="5">
+                            <br>
+                            <button id="resetsidebrush" onclick='document.getElementById("sidebrushPWM").value="0"'>Reset</button>
+                        </div>
+                        <div class="col-3">
+                            <input type="radio" id="sidebrushccw" name="sidebrushdirection" checked>
+                            <label class="contrast small-font">ccw</label>
+                            <input type="radio" id="sidebrushcw" name="sidebrushdirection">
+                            <label class="contrast small-font">cw</label>
+                            <br>
+                            <input type="radio" id="sidebrushon" name="sidebrushonoff">
+                            <label class="contrast small-font">on</label>
+                            <input type="radio" id="sidebrushoff" name="sidebrushonoff" checked>
+                            <label class="contrast small-font">off</label>
+                        </div>
+                    </div>
+                    <div class="row-2">
+                        <div class="col-1">
+                            <label class="contrast">Main Brush</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="range" id="mainbrushPWM" min="-127" max="127" value="0" step="5">
+                            <br>
+                            <button id="resetmainbrush" onclick='document.getElementById("mainbrushPWM").value = "0"'>Reset</button>
+                        </div>
+                        <div class="col-3">
+                            <input type="radio" id="mainbrushin" name="mainbrushdirection" checked>
+                            <label class="contrast small-font">in</label>
+                            <input type="radio" id="mainbrushout" name="mainbrushdirection">
+                            <label class="contrast small-font">out</label>
+                            <br>
+                            <input type="radio" id="mainbrushon" name="mainbrushonoff">
+                            <label class="contrast small-font">on</label>
+                            <input type="radio" id="mainbrushoff" name="mainbrushonoff" checked>
+                            <label class="contrast small-font">off</label>
+                        </div>
+                    </div>
+                    <div class="row-3">
+                        <div class="col-1">
+                            <label class="contrast">Vac</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="range" id="vacuumPWM" min="0" max="127" value="0" step="5">
+                            <br>
+                            <button id="sendmotorspwm" onclick='sendPWMMotors(document.getElementById("mainbrushPWM").value,document.getElementById("sidebrushPWM").value,document.getElementById("vacuumPWM").value)'>Send</button>
+                            <button id="allmotorsoff" onclick='sendRunMotorsFullSpeed(0,0,0,0,0)'>OFF</button>
+                        </div>
+                        <div class="col-3">
+                            <input type="radio" id="vacuumon" name="vacuumonoff">
+                            <label class="contrast small-font">on</label>
+                            <input type="radio" id="vacuumoff" name="vacuumonoff" checked>
+                            <label class="contrast small-font">off</label>
+                            <br>
+                            <button id="sendmotors" onclick='sendRunMotorsFullSpeed(document.getElementById("mainbrushout").checked? 1:0, document.getElementById("sidebrushcw").checked? 1:0, document.getElementById("mainbrushon").checked? 1:0,document.getElementById("vacuumon").checked? 1:0,document.getElementById("sidebrushon").checked? 1:0)'>Send</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
