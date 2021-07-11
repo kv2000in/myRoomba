@@ -109,8 +109,18 @@
             /*                position top half-10% away from top*/
             #top-half {
                 top: 10%;
+                 
             }
-
+            #sensors-top-half {
+                top: 10%;
+                position: fixed;
+                visibility: hidden;
+                width:100%;
+                z-index: 1;
+                overflow: scroll;
+                background-color: black;
+                    
+            }
             /*                position bottom half -at bottom*/
             .bottom {
                 right: 0;
@@ -257,7 +267,7 @@
             .three-slider {
                 width: 100%;
                 height: 100%;
-                \ }
+                 }
 
             .three-lights {
                 width: 49%;
@@ -343,7 +353,12 @@
             .contrast {
                 color: white;
             }
-
+            .sensors{
+                color: white;
+            }
+            .sensor-values{
+                height: fit-content;
+            }
             .row-1 {
                 position: absolute;
                 top: 0%;
@@ -385,6 +400,14 @@
                 width: 38%;
                 right: 0;
             }
+            #websocketstatus[type="radio"]:disabled {
+                
+                    color: aqua;
+                background-color: aqua;
+                border-color: aquamarine;
+                
+                
+            }
         </style>
         <title>myRover</title>
     </head>
@@ -396,13 +419,118 @@
         <div class="notification-bar" id="notification">
             <div class="console" id="mylocalconsole"></div>
             <div class="selectables"></div>
-            <div class="smbusnumericals numericals" id="smbusbatteryI"></div>
-            <div class="smbusnumericals numericals" id="smbusbatteryV"></div>
-            <div class="smbusnumericals numericals" id="smbusbatteryT"></div>
-            <div class="smbusnumericals numericals" id="smbusbatteryc"></div>
-            <div class="smbusnumericals numericals" id="smbusbatteryR"></div>
-            <div class="smbusnumericals numericals" id="smbusbatteryF"></div>
-            <div class="numericals" id="analogbatteryV"></div>
+            <label for="websocketstatus">Connected</label>
+            <input type="radio" id="websocketstatus" disabled>
+            <label for="showhidesensors">ShowSensors</label>
+           <input type="checkbox" id="showhidesensors" onchange="showhidesensordiv()">
+            <button onclick="myLoop()">Sensor</button>
+            <input class="smbusnumericals numericals" id="Current">
+            <input class="smbusnumericals numericals" id="Voltage">
+            <input class="smbusnumericals numericals" id="Temperature">
+            <input class="smbusnumericals numericals" id="BatteryCharge">
+            <input class="smbusnumericals numericals" id="BatteryCapacity">
+                    </div>
+        
+        <div class="half" id="sensors-top-half" style="visibility: hidden">
+        <p>
+        <label class = "sensors">BumpsWheelDrops</label><input class="sensor-values" type="number" id="BumpsWheelDrops">  <br> 
+            
+            <label class = "sensors">Wall</label><input class="sensor-values" type="number" id="Wall">
+            
+            <label class = "sensors">CliffLeft</label><input class="sensor-values" type="number" id="CliffLeft">
+          <br>
+            <label class = "sensors">CliffFrontLeft</label><input class="sensor-values" type="number" id="CliffFrontLeft">
+           
+            <label class = "sensors">CliffFrontRight</label><input class="sensor-values" type="number" id="CliffFrontRight">; 
+            
+          <label class = "sensors">CliffRight</label><input class="sensor-values" type="number" id="CliffRight">; 
+            <br>
+            <label class = "sensors">VirtualWall</label><input class="sensor-values" type="number" id="VirtualWall">; 
+           
+           
+            <label class = "sensors">Overcurrents</label><input class="sensor-values" type="number" id="Overcurrents">; 
+         
+            <label class = "sensors">DirtDetect</label><input class="sensor-values" type="number" id="DirtDetect">; 
+          <br>
+           
+            <label class = "sensors">IrOpcode</label><input class="sensor-values" type="number" id="IrOpcode">; 
+             
+            <label class = "sensors">Buttons</label><input class="sensor-values" type="number" id="Buttons">; 
+              
+            <label class = "sensors">Distance</label><input class="sensor-values" type="number" id="Distance">; 
+           <br>
+            <label class = "sensors">Angle</label><input class="sensor-values" type="number" id="Angle">; 
+           
+            <label class = "sensors">ChargingState</label><input class="sensor-values" type="number" id="ChargingState">; 
+        
+              
+            <label class = "sensors">WallSignal</label><input class="sensor-values" type="number" id="WallSignal">; 
+             <br>
+            <label class = "sensors">CliffLeftSignal</label><input class="sensor-values" type="number" id="CliffLeftSignal">; 
+            
+            <label class = "sensors">CliffFrontLeftSignal</label><input class="sensor-values" type="number" id="CliffFrontLeftSignal">; 
+            
+            <label class = "sensors">CliffFrontRightSignal</label><input class="sensor-values" type="number" id="CliffFrontRightSignal">; 
+            <br>
+            <label class = "sensors">CliffRightSignal</label><input class="sensor-values" type="number" id="CliffRightSignal">; 
+        
+        
+           
+            <label class = "sensors">ChargerAvailable</label><input class="sensor-values" type="number" id="ChargerAvailable">; 
+           
+            <label class = "sensors">OpenInterfaceMode</label><input class="sensor-values" type="number" id="OpenInterfaceMode">; 
+            <br>
+            <label class = "sensors">SongNumber</label><input class="sensor-values" type="number" id="SongNumber">; 
+            
+            <label class = "sensors">SongPlaying</label><input class="sensor-values" type="number" id="SongPlaying">; 
+            
+            <label class = "sensors">OiStreamNumPackets</label><input class="sensor-values" type="number" id="OiStreamNumPackets">; 
+           <br>
+            <label class = "sensors">Velocity</label><input class="sensor-values" type="number" id="Velocity">; 
+            
+            <label class = "sensors">Radius</label><input class="sensor-values" type="number" id="Radius">; 
+            
+            <label class = "sensors">VelocityRight</label><input class="sensor-values" type="number" id="VelocityRight">; 
+            <br>
+            <label class = "sensors">VelocityLeft</label><input class="sensor-values" type="number" id="VelocityLeft">; 
+            
+            <label class = "sensors">EncoderCountsLeft</label><input class="sensor-values" type="number" id="EncoderCountsLeft">; 
+            
+            <label class = "sensors">EncoderCountsRight</label><input class="sensor-values" type="number" id="EncoderCountsRight">; 
+            <br>
+            <label class = "sensors">LightBumper</label><input class="sensor-values" type="number" id="LightBumper">; 
+            
+            <label class = "sensors">LightBumpLeft</label><input class="sensor-values" type="number" id="LightBumpLeft">; 
+            
+            <label class = "sensors">LightBumpFrontLeft</label><input class="sensor-values" type="number" id="LightBumpFrontLeft">; 
+            <br>
+            <label class = "sensors">LightBumpCenterLeft</label><input class="sensor-values" type="number" id="LightBumpCenterLeft">; 
+            
+            <label class = "sensors">LightBumpCenterRight</label><input class="sensor-values" type="number" id="LightBumpCenterRight">; 
+            
+            <label class = "sensors">LightBumpFrontRight</label><input class="sensor-values" type="number" id="LightBumpFrontRight">; 
+            <br>
+            <label class = "sensors">LightBumpRight</label><input class="sensor-values" type="number" id="LightBumpRight">; 
+            
+            <label class = "sensors">IrOpcodeLeft</label><input class="sensor-values" type="number" id="IrOpcodeLeft">; 
+            
+            <label class = "sensors">IrOpcodeRight</label><input class="sensor-values" type="number" id="IrOpcodeRight">; 
+            <br>
+            <label class = "sensors">LeftMotorCurrent</label><input class="sensor-values" type="number" id="LeftMotorCurrent">; 
+           
+            <label class = "sensors">RightMotorCurrent</label><input class="sensor-values" type="number" id="RightMotorCurrent">; 
+            
+            <label class = "sensors">MainBrushCurrent</label><input class="sensor-values" type="number" id="MainBrushCurrent">; 
+            <br>
+            <label class = "sensors">SideBrushCurrent</label><input class="sensor-values" type="number" id="SideBrushCurrent">; 
+           
+            <label class = "sensors">Stasis</label><input class="sensor-values" type="number" id="Stasis">; 
+            <label class = "sensors" style="visibility: hidden">Unused1</label><input class="sensor-values" type="number" id="Unused1" style="visibility: hidden">; 
+            
+            <label class = "sensors" style="visibility: hidden">Unused2</label><input class="sensor-values" type="number" id="Unused2" style="visibility: hidden">; 
+            <label class = "sensors" style="visibility: hidden">Unused3</label><input class="sensor-values" type="number" id="Unused3"style="visibility: hidden">; 
+            </p>
+        
         </div>
         <div class="half" id="top-half">
             <div class="ten vertical3slider" id="top-left-1" id="gearB">
@@ -509,6 +637,7 @@
         </div>
         <div class="half bottom" id="bottom-half">
             <div class="sixty" id="bottom-middle">
+           
                 <div class="horizontalslider"></div>
                 <div class="steering-container" id="steering-container">
                     <div class="steering-outer-circle" id="steering-outer-circle">
@@ -529,6 +658,10 @@
                     <input list="availablecommands" id="mycommands">
                     <button id="sendcommandbutton" class="genericbutton" onclick='sendcommandfromtext()'>Send</button>
                     <datalist id="availablecommands"></datalist>
+                         <input type="radio" id="radiusCW" name="radius"><label class="contrast small-font">CW</label><br>
+                <input type="radio" id="radiusCCW" name="radius"><label class="contrast small-font">CCW</label><br>
+                <input type="radio" id="radiusOFF" name="radius" checked><label class="contrast small-font">OFF</label>
+                    <button onclick='setradius()'>Set</button>
                 </div>
             </div>
         </div>
@@ -622,6 +755,421 @@ parseInt(myval, 16);
         var DrivePWM = 146;
         var RunMotorsFullSpeed = 138;
         var PWMMotors = 144;
+        var Sensors = 142;
+        //ROOMBA Sensor packets
+        var RoombaSensorObject  = {
+        "Group0":                 [0,0,26,0],   //Packet IDs 7 to 26 //[Offset(compared to 80 byte data),packetID,packetdatasize(number of bytes) ,signed]
+        "Group1":                 [0,1,10,0],   //Packet IDs 7 to 16
+        "Group2":                 [10,2,6,0],   //Packet IDs 17 to 20
+        "Group3":                 [16,3,10,0],   //Packet IDs 21 to 26
+        "Group4":                 [26,4,14,0],   //Packet IDs 27 to 34
+        "Group5":                 [40,5,12,0],   //Packet IDs 35 to 42
+        "Group6":                 [0,6,52,0],   //Packet IDs 7 to 42
+        "Group100":               [0,100,80,0], //Packet IDs 7 to 58 (All sensors)
+        "Group101":               [52,101,28,0], //Packet IDs 43 to 58
+        "Group106":               [57,106,12,0], //Packet IDs 46 to 51
+        "Group107":               [71,107,9,0],  //Packet IDs 54 to 58
+        "BumpsWheelDrops":        [0,7,1,0],   //1 byte 0-15 [byte number in 80 array,packetID,packetdatasize (number of bytes),signed]
+        "Wall":                   [1,8,1,0],   //1 byte 0-1
+        "CliffLeft":              [2,9,1,0],   //1 byte 0-1
+        "CliffFrontLeft":         [3,10,1,0],  //1 byte 0-1
+        "CliffFrontRight":        [4,11,1,0],  //1 byte 0-1
+        "CliffRight":             [5,12,1,0],  //1 byte 0-1
+        "VirtualWall":            [6,13,1,0],  //1 byte 0-1
+        "Overcurrents":           [7,14,1,0],  //1 byte 0-29
+        "DirtDetect":             [8,15,1,0],  //1 byte 0-255
+        "Unused1":                [9,16,1,0],  //1 byte 0-255
+        "IrOpcode":               [10,17,1,0],  //1 byte 0-255
+        "Buttons":                [11,18,1,1], //1 byte 0-255
+        "Distance":               [12,19,2,1],  //2 bytes -32768 to 32767 mm
+        "Angle":                  [14,20,2,1],  //2 bytes -32768 to 32767 degrees
+        "ChargingState":          [16,21,1,0],  //1 byte 0 -6, 0 Not charging, 1 Reconditioning Charging, 2 Full Charging, 3 Trickle Charging, 4 Waiting ,5 Charging Fault Condition
+        "Voltage":                [17,22,2,0],  //2 bytes 0-65535 mV
+        "Current":                [19,23,2,1],  //2 bytes -32768 to 32767 mA
+        "Temperature":            [21,24,1,1],  //1 byte -128 to 127 deg C
+        "BatteryCharge":          [22,25,2,0],  //2 bytes 0 - 65535 mAh
+        "BatteryCapacity":        [24,26,2,0],  //2 bytes 0 - 65535 mAh
+        "WallSignal":             [26,27,2,0],  //2 bytes 0 - 1023
+        "CliffLeftSignal":        [28,28,2,0],  //2 bytes 0 - 4095
+        "CliffFrontLeftSignal":   [30,29,2,0],  //2 bytes 0 - 4095
+        "CliffFrontRightSignal":  [32,30,2,0],  //2 bytes 0 - 4095
+        "CliffRightSignal":       [34,31,2,0],  //2 bytes 0 - 4095
+        "Unused2":                [36,32,1,0],  //1 byte 0 - 255
+        "Unused3":                [37,33,2,0],  //2 bytes 0 - 65535
+        "ChargerAvailable":       [39,34,1,0],  //1 byte 0-3
+        "OpenInterfaceMode":      [40,35,1,0],  //1 byte 0-3
+        "SongNumber":             [41,36,1,0],  //1 byte 0-4
+        "SongPlaying":            [42,37,1,0],  //1 byte 0-1
+        "OiStreamNumPackets":     [43,38,1,0],  //1 byte 0-108
+        "Velocity":               [44,39,2,1],  //2 bytes -500 to 500 mm/s
+        "Radius":                 [46,40,2,1],  //2 bytes -32768 to 32767 mm
+        "VelocityRight":          [48,41,2,1],  //2 bytes -500 to 500 mm/s
+        "VelocityLeft":           [50,42,2,1],  //2 bytes -500 to 500 mm/s
+        "EncoderCountsLeft":      [52,43,2,1],  //2 bytes -32768 to 32767
+        "EncoderCountsRight":     [54,44,2,1], //2 bytes -32768 to 32767
+        "LightBumper":            [56,45,1,0],  //1 byte 0-127
+        "LightBumpLeft":          [57,46,2,0],  //2 bytes 0-4095
+        "LightBumpFrontLeft":     [59,47,2,0],  //2 bytes 0-4095
+        "LightBumpCenterLeft":    [61,48,2,0],  //2 bytes 0-4095
+        "LightBumpCenterRight":   [63,49,2,0],  //2 bytes 0-4095
+        "LightBumpFrontRight":    [65,50,2,0],  //2 bytes 0-4095
+        "LightBumpRight":         [67,51,2,0],  //2 bytes 0-4095
+        "IrOpcodeLeft":           [69,52,1,0], //1 byte 0-255
+        "IrOpcodeRight":          [70,53,1,0],  //1 byte 0-255
+        "LeftMotorCurrent":       [71,54,2,1],  //2 bytes -32768 to 32767mA
+        "RightMotorCurrent":      [73,55,2,1],  //2 bytes -32768 to 32767 mA
+        "MainBrushCurrent":       [75,56,2,1],  //2 bytes -32768 to 32767 mA
+        "SideBrushCurrent":       [77,57,2,1],  //2 bytes -32768 to 32767 mA
+        "Stasis":                [79,58,1,0]  //1 byte 0-3 bit 0 - stasis toggling yes or no, bit 1 stasis disabled yes or no
+            
+        }
+/*        var Group0=                 [0,0,26,0]   //Packet IDs 7 to 26 //[Offset(compared to 80 byte data),packetID,packetdatasize(number of bytes) ,signed]
+        var Group1=                 [0,1,10,0]   //Packet IDs 7 to 16
+        var Group2=                 [10,2,6,0]    //Packet IDs 17 to 20
+        var Group3=                 [16,3,10,0]   //Packet IDs 21 to 26
+        var Group4=                 [26,4,14,0]   //Packet IDs 27 to 34
+        var Group5=                 [40,5,12,0]   //Packet IDs 35 to 42
+        var Group6=                 [0,6,52,0]   //Packet IDs 7 to 42
+        var Group100=               [0,100,80,0] //Packet IDs 7 to 58 (All sensors)
+        var Group101=               [52,101,28,0] //Packet IDs 43 to 58
+        var Group106=               [57,106,12,0] //Packet IDs 46 to 51
+        var Group107=               [71,107,9,0]  //Packet IDs 54 to 58
+        var BumpsWheelDrops =       [0,7,1,0]   //1 byte 0-15 [byte number in 80 array,packetID,packetdatasize (number of bytes),signed]
+        var Wall =                  [1,8,1,0]   //1 byte 0-1
+        var CliffLeft =             [2,9,1,0]   //1 byte 0-1
+        var CliffFrontLeft =        [3,10,1,0]  //1 byte 0-1
+        var CliffFrontRight=        [4,11,1,0]  //1 byte 0-1
+        var CliffRight=             [5,12,1,0]  //1 byte 0-1
+        var VirtualWall=            [6,13,1,0]  //1 byte 0-1
+        var Overcurrents=           [7,14,1,0]  //1 byte 0-29
+        var DirtDetect=             [8,15,1,0]  //1 byte 0-255
+        var Unused1=                [9,16,1,0]  //1 byte 0-255
+        var IrOpcode=               [10,17,1,0]  //1 byte 0-255
+        var Buttons=                [11,18,1,1] //1 byte 0-255
+        var Distance=               [12,19,2,1]  //2 bytes -32768 to 32767 mm
+        var Angle=                  [14,20,2,1]  //2 bytes -32768 to 32767 degrees
+        var ChargingState=          [16,21,1,0]  //1 byte 0 -6, 0 Not charging, 1 Reconditioning Charging, 2 Full Charging, 3 Trickle Charging, 4 Waiting ,5 Charging Fault Condition
+        var Voltage=                [17,22,2,0]  //2 bytes 0-65535 mV
+        var Current=                [19,23,2,1]  //2 bytes -32768 to 32767 mA
+        var Temperature=            [21,24,1,1]  //1 byte -128 to 127 deg C
+        var BatteryCharge=          [22,25,2,0]  //2 bytes 0 - 65535 mAh
+        var BatteryCapacity=        [24,26,2,0]  //2 bytes 0 - 65535 mAh
+        var WallSignal=             [26,27,2,0]  //2 bytes 0 - 1023
+        var CliffLeftSignal=        [28,28,2,0]  //2 bytes 0 - 4095
+        var CliffFrontLeftSignal=   [30,29,2,0]  //2 bytes 0 - 4095
+        var CliffFrontRightSignal=  [32,30,2,0]  //2 bytes 0 - 4095
+        var CliffRightSignal=       [34,31,2,0]  //2 bytes 0 - 4095
+        var Unused2=                [36,32,1,0]  //1 byte 0 - 255
+        var Unused3=                [37,33,2,0]  //2 bytes 0 - 65535
+        var ChargerAvailable=       [39,34,1,0]  //1 byte 0-3
+        var OpenInterfaceMode=      [40,35,1,0]  //1 byte 0-3
+        var SongNumber=             [41,36,1,0]  //1 byte 0-4
+        var SongPlaying=            [42,37,1,0]  //1 byte 0-1
+        var OiStreamNumPackets=     [43,38,1,0]  //1 byte 0-108
+        var Velocity=               [44,39,2,1]  //2 bytes -500 to 500 mm/s
+        var Radius=                 [46,40,2,1]  //2 bytes -32768 to 32767 mm
+        var VelocityRight=          [48,41,2,1]  //2 bytes -500 to 500 mm/s
+        var VelocityLeft=           [50,42,2,1]  //2 bytes -500 to 500 mm/s
+        var EncoderCountsLeft=      [52,43,2,1]  //2 bytes -32768 to 32767
+        var EncoderCountsRight=     [54,44,2,1]  //2 bytes -32768 to 32767
+        var LightBumper=            [56,45,1,0]  //1 byte 0-127
+        var LightBumpLeft=          [57,46,2,0]  //2 bytes 0-4095
+        var LightBumpFrontLeft=     [59,47,2,0]  //2 bytes 0-4095
+        var LightBumpCenterLeft=    [61,48,2,0]  //2 bytes 0-4095
+        var LightBumpCenterRight=   [63,49,2,0]  //2 bytes 0-4095
+        var LightBumpFrontRight=    [65,50,2,0]  //2 bytes 0-4095
+        var LightBumpRight=         [67,51,2,0]  //2 bytes 0-4095
+        var IrOpcodeLeft=           [69,52,1,0]  //1 byte 0-255
+        var IrOpcodeRight=          [70,53,1,0]  //1 byte 0-255
+        var LeftMotorCurrent=       [71,54,2,1]  //2 bytes -32768 to 32767mA
+        var RightMotorCurrent=      [73,55,2,1]  //2 bytes -32768 to 32767 mA
+        var MainBrushCurrent=       [75,56,2,1]  //2 bytes -32768 to 32767 mA
+        var SideBrushCurrent=       [77,57,2,1]  //2 bytes -32768 to 32767 mA
+        var Stasis=                 [79,58,1,0]  //1 byte 0-3 bit 0 - stasis toggling yes or no, bit 1 stasis disabled yes or no*/
+       
+        
+        //Sensor value arrays
+        var SensorGroup0=[
+            "BumpsWheelDrops",
+            "Wall",
+            "CliffLeft",
+            "CliffFrontLeft",
+            "CliffFrontRight",
+            "CliffRight",
+            "VirtualWall",
+            "Overcurrents",
+            "DirtDetect",
+            "Unused1",
+            "IrOpcode",
+            "Buttons",                
+            "Distance",               
+            "Angle",                 
+            "ChargingState",          
+            "Voltage",                
+            "Current",               
+            "Temperature",            
+            "BatteryCharge",          
+            "BatteryCapacity"
+        ];
+        var SensorGroup1=[
+         "BumpsWheelDrops",
+            "Wall",
+            "CliffLeft",
+            "CliffFrontLeft",
+            "CliffFrontRight",
+            "CliffRight",
+            "VirtualWall",
+            "Overcurrents",
+            "DirtDetect",
+            "Unused1"
+        ];
+        var SensorGroup2=[
+              "IrOpcode",
+            "Buttons",                
+            "Distance",               
+            "Angle"
+        ];
+        var SensorGroup3=[
+            "ChargingState",          
+            "Voltage",                
+            "Current",               
+            "Temperature",            
+            "BatteryCharge",          
+            "BatteryCapacity"
+        ];
+        var SensorGroup4=[
+            "WallSignal",             
+            "CliffLeftSignal",        
+            "CliffFrontLeftSignal",
+            "CliffFrontRightSignal",
+            "CliffRightSignal",
+            "Unused2",
+            "Unused3",
+            "ChargerAvailable"
+            ];
+        var SensorGroup5=[
+            "OpenInterfaceMode",
+            "SongNumber",
+            "SongPlaying",
+            "OiStreamNumPackets",
+            "Velocity",
+            "Radius",
+            "VelocityRight",
+            "VelocityLeft"
+            ];
+        var SensorGroup6=[
+     "BumpsWheelDrops",
+            "Wall",
+            "CliffLeft",
+            "CliffFrontLeft",
+            "CliffFrontRight",
+            "CliffRight",
+            "VirtualWall",
+            "Overcurrents",
+            "DirtDetect",
+            "Unused1",
+            "IrOpcode",
+            "Buttons",                
+            "Distance",               
+            "Angle",                 
+            "ChargingState",          
+            "Voltage",                
+            "Current",               
+            "Temperature",            
+            "BatteryCharge",          
+            "BatteryCapacity",        
+           "WallSignal",             
+            "CliffLeftSignal",        
+            "CliffFrontLeftSignal",
+            "CliffFrontRightSignal",
+            "CliffRightSignal",
+            "Unused2",
+            "Unused3",
+            "ChargerAvailable",
+           "OpenInterfaceMode",
+            "SongNumber",
+            "SongPlaying",
+            "OiStreamNumPackets",
+            "Velocity",
+            "Radius",
+            "VelocityRight",
+            "VelocityLeft"
+            ];
+        
+          var SensorGroup100=[
+             "BumpsWheelDrops",
+            "Wall",
+            "CliffLeft",
+            "CliffFrontLeft",
+            "CliffFrontRight",
+            "CliffRight",
+            "VirtualWall",
+            "Overcurrents",
+            "DirtDetect",
+            "Unused1",
+            "IrOpcode",
+            "Buttons",                
+            "Distance",               
+            "Angle",                 
+            "ChargingState",          
+            "Voltage",                
+            "Current",               
+            "Temperature",            
+            "BatteryCharge",          
+            "BatteryCapacity",        
+           "WallSignal",             
+            "CliffLeftSignal",        
+            "CliffFrontLeftSignal",
+            "CliffFrontRightSignal",
+            "CliffRightSignal",
+            "Unused2",
+            "Unused3",
+            "ChargerAvailable",
+           "OpenInterfaceMode",
+            "SongNumber",
+            "SongPlaying",
+            "OiStreamNumPackets",
+            "Velocity",
+            "Radius",
+            "VelocityRight",
+            "VelocityLeft",
+           "EncoderCountsLeft",
+            "EncoderCountsRight",
+            "LightBumper",
+            "LightBumpLeft",
+            "LightBumpFrontLeft",
+            "LightBumpCenterLeft",
+            "LightBumpCenterRight",
+            "LightBumpFrontRight",
+            "LightBumpRight",
+            "IrOpcodeLeft",
+            "IrOpcodeRight",
+            "LeftMotorCurrent",
+            "RightMotorCurrent",
+            "MainBrushCurrent",
+            "SideBrushCurrent",
+            "Stasis"  ];
+        var SensorGroup101=[
+            "EncoderCountsLeft",
+            "EncoderCountsRight",
+            "LightBumper",
+            "LightBumpLeft",
+            "LightBumpFrontLeft",
+            "LightBumpCenterLeft",
+            "LightBumpCenterRight",
+            "LightBumpFrontRight",
+            "LightBumpRight",
+            "IrOpcodeLeft",
+            "IrOpcodeRight",
+            "LeftMotorCurrent",
+            "RightMotorCurrent",
+            "MainBrushCurrent",
+            "SideBrushCurrent",
+            "Stasis" 
+            ];
+        var SensorGroup106=[
+            "LightBumpLeft",
+            "LightBumpFrontLeft",
+            "LightBumpCenterLeft",
+            "LightBumpCenterRight",
+            "LightBumpFrontRight",
+            "LightBumpRight"
+            ];
+        var SensorGroup107=[
+           "LeftMotorCurrent",
+            "RightMotorCurrent",
+            "MainBrushCurrent",
+            "SideBrushCurrent",
+            "Stasis"
+        ];
+    /*    var valGroup100=[
+            BumpsWheelDrops,
+            Wall,
+            CliffLeft,
+            CliffFrontLeft,
+            CliffFrontRight,
+            CliffRight,
+            VirtualWall,
+            Overcurrents,
+            DirtDetect,
+            Unused1,
+            IrOpcode,
+            Buttons,                
+            Distance,               
+            Angle,                 
+            ChargingState,          
+            Voltage,                
+            Current,               
+            Temperature,            
+            BatteryCharge,          
+            BatteryCapacity,        
+            WallSignal,             
+            CliffLeftSignal,        
+            CliffFrontLeftSignal,
+            CliffFrontRightSignal,
+            CliffRightSignal,
+            Unused2,
+            Unused3,
+            ChargerAvailable,
+            OpenInterfaceMode,
+            SongNumber,
+            SongPlaying,
+            OiStreamNumPackets,
+            Velocity,
+            Radius,
+            VelocityRight,
+            VelocityLeft,
+            EncoderCountsLeft,
+            EncoderCountsRight,
+            LightBumper,
+            LightBumpLeft,
+            LightBumpFrontLeft,
+            LightBumpCenterLeft,
+            LightBumpCenterRight,
+            LightBumpFrontRight,
+            LightBumpRight,
+            IrOpcodeLeft,
+            IrOpcodeRight,
+            LeftMotorCurrent,
+            RightMotorCurrent,
+            MainBrushCurrent,
+            SideBrushCurrent,
+            Stasis  ];
+        var valGroup101=[
+            EncoderCountsLeft,
+            EncoderCountsRight,
+            LightBumper,
+            LightBumpLeft,
+            LightBumpFrontLeft,
+            LightBumpCenterLeft,
+            LightBumpCenterRight,
+            LightBumpFrontRight,
+            LightBumpRight,
+            IrOpcodeLeft,
+            IrOpcodeRight,
+            LeftMotorCurrent,
+            RightMotorCurrent,
+            MainBrushCurrent,
+            SideBrushCurrent,
+            Stasis
+        ];
+        var valGroup106=[
+            LightBumpLeft,
+            LightBumpFrontLeft,
+            LightBumpCenterLeft,
+            LightBumpCenterRight,
+            LightBumpFrontRight,
+            LightBumpRight
+        ];
+        var valGroup107=[
+            LeftMotorCurrent,
+            RightMotorCurrent,
+            MainBrushCurrent,
+            SideBrushCurrent,
+            Stasis
+        ];*/
+        
+        
         var maxFvelocity = 500;
         //mm/s
         var maxRvelocity = -500;
@@ -633,6 +1181,60 @@ parseInt(myval, 16);
         var currentRadius = 32767;
         //default straight
         var currentVelocity = 0;
+        var waitingforsensordata = false;
+        var lengthofdatarequested = 80;
+        var currentbufferoffset =0;
+        var outbuffer=null;
+        var outbufferview=null;
+        
+        
+        function uintToInt(uint, nbit) {
+    nbit = +nbit || 32;
+    if (nbit > 32) throw new RangeError('uintToInt only supports ints up to 32 bits');
+    uint <<= 32 - nbit;
+    uint >>= 32 - nbit;
+    return uint;
+}
+
+        
+        function requestSensorDatafromRoomba(packetID,datasize){
+            doSend(Sensors);
+            doSend(packetID); // going to request 6 , all sensor data for now - which returns 52 bytes of data. using packetID for future
+            waitingforsensordata = true;
+            lengthofdatarequested=datasize;
+            outbuffer = new ArrayBuffer(lengthofdatarequested);
+             outbufferview = new Uint8Array(outbuffer);
+            
+        }
+        function handleSensorDatafromRoomba(incomingBinaryDataArrayBuffer){
+
+                var inbufferview = new Uint8Array(incomingBinaryDataArrayBuffer);                    
+                                        
+            //add it to the buffer
+           outbufferview.set(inbufferview,currentbufferoffset);
+            //set the offset
+            currentbufferoffset = currentbufferoffset+inbufferview.byteLength;
+            
+            //set the request flag to false
+            if (currentbufferoffset==lengthofdatarequested)
+                {
+                    waitingforsensordata=false;
+                    currentbufferoffset =0;
+                //console.log(outbufferview);
+     for (j=0;j<SensorGroup100.length;j++){document.getElementById(SensorGroup100[j]).value=retrievesensorvalue(RoombaSensorObject[SensorGroup100[j]],RoombaSensorObject["Group100"])} }
+            
+        }
+        function retrievesensorvalue(whichsensor,requestedsensorgroup){
+            //
+            var mysensorvalue=outbufferview.slice(whichsensor[0]-requestedsensorgroup[0],whichsensor[0]-requestedsensorgroup[0]+whichsensor[2]);
+            var returnvalue="";
+            for (i=0;i<mysensorvalue.length;i++){
+              returnvalue=returnvalue+mysensorvalue[i].toString(2);
+                //parseInt((myunit16array[0].toString(2)+myunit16array[1].toString(2)),2)
+            }
+            return parseInt(returnvalue,2);
+        }
+        
         /*
 It takes four data bytes, interpreted as two 16-bit signed
 values using two’s complement. (http://en.wikipedia.org/wiki/Two%27s_complement) The first two bytes
@@ -764,6 +1366,14 @@ counterclockwise. Default direction for the main brush/flapper is inward.
             doSend(vacuumPWM);
         }
 
+        function setradius(){
+            var myradiusCW = document.getElementById("radiusCW").checked;
+             var myradiusCCW = document.getElementById("radiusCCW").checked;
+             var myradiusOFF = document.getElementById("radiusOFF").checked;
+            if (myradiusCCW == 1){currentRadius=-1;}
+            if (myradiusCW == 1){currentRadius=1;}
+            if (myradiusOFF == 1){currentRadius=32767;}
+        }
         function sendcommandfromtext() {
 
             doSend(document.getElementById("mycommands").value);
@@ -1059,20 +1669,49 @@ counterclockwise. Default direction for the main brush/flapper is inward.
 	 //if holding the steering knob for longer than 750 ms, send the current angle. 
 	 onlongtouch=doSend("<W-"+myangle+">");*/
 
+        var m = 1;                  //  set your counter to 1
+
+function myLoop() {         //  create a loop function
+  setTimeout(function() {   //  call a 3s setTimeout when the loop is called
+    requestSensorDatafromRoomba(RoombaSensorObject["Group100"][1],RoombaSensorObject["Group100"][2]);   //  your code here
+    m++;                    //  increment the counter
+    if (m < 1000) {           //  if the counter < 10, call the loop function
+      myLoop();             //  ..  again which will trigger another 
+    }                       //  ..  setTimeout()
+  }, 300)
+}
+
+ function handlewebsocketstatus(){
+     if (iswebsocketconnected){
+         document.getElementById("websocketstatus").checked=true;
+     }
+     else
+         {
+              document.getElementById("websocketstatus").checked=false;
+         }
+ }       
+        
+      function showhidesensordiv() {
+        if  (document.getElementById("sensors-top-half").style.visibility == "hidden"){document.getElementById("sensors-top-half").style.visibility = "visible";}
+      else document.getElementById("sensors-top-half").style.visibility = "hidden";
+      }  
         var websock;
         var iswebsocketconnected = false;
         function doConnect() {
             // websock = new WebSocket('ws://' + window.location.hostname + ':8000/');
             websock = new WebSocket('ws://192.168.4.1:8000/');
+            websock.binaryType = "arraybuffer";
             websock.onopen = function(evt) {
                 console.log('websock open');
                 iswebsocketconnected = true;
+                handlewebsocketstatus();
 
             }
 
             websock.onclose = function(evt) {
                 iswebsocketconnected = false;
                 console.log('websock close');
+                handlewebsocketstatus();
                 //clear all the intervals - doesn't work. still dealing with "ghost" setIntervals
 
             }
@@ -1082,6 +1721,9 @@ counterclockwise. Default direction for the main brush/flapper is inward.
             websock.onmessage = function(evt) {
                 //console.log(evt); 
                 console.log(evt.data);
+                if (waitingforsensordata) {
+                    handleSensorDatafromRoomba(evt.data);
+                }
                 //parse_incoming_websocket_messages(evt.data);
             }
         }
