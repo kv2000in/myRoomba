@@ -10,12 +10,14 @@
 		2A0502712667FF4600C4D89D /* ESP-Roomba-Self-AP */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "ESP-Roomba-Self-AP"; sourceTree = "<group>"; };
 		2A050272267692BB00C4D89D /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		2A0E90C5269B68DF006D7555 /* RoombaVirtualWall */ = {isa = PBXFileReference; lastKnownFileType = folder; path = RoombaVirtualWall; sourceTree = "<group>"; };
+		2A7D3FD827ECFFAB000AC688 /* iRobot_Roomba_600_Open_Interface_Spec.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = iRobot_Roomba_600_Open_Interface_Spec.pdf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		2A0502672667FDBB00C4D89D = {
 			isa = PBXGroup;
 			children = (
+				2A7D3FD827ECFFAB000AC688 /* iRobot_Roomba_600_Open_Interface_Spec.pdf */,
 				2A050272267692BB00C4D89D /* index.html */,
 				2A0E90C5269B68DF006D7555 /* RoombaVirtualWall */,
 				2A0502712667FF4600C4D89D /* ESP-Roomba-Self-AP */,
